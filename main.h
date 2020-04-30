@@ -20,7 +20,7 @@ public:
     HashMap(Hash hash = Hash()): hash(hash) {}
 
     template<typename It>
-    HashMap(It begin,
+    HashMap(const It begin,
             const It end,
             Hash hash = Hash()): hash(hash) {
         for (auto it = begin; it != end; ++it) {
