@@ -6,14 +6,15 @@
 
 template<class KeyType, class ValueType, class Hash = std::hash<KeyType>> 
 class HashMap {
+    using KeyValuePair = std::pair<const KeyType, ValueType>;
 public:
-    using const_iterator = typename std::list<std::pair<const KeyType, ValueType>>::const_iterator;
-    using iterator = typename std::list<std::pair<const KeyType, ValueType>>::iterator;
+    using const_iterator = typename std::list<KeyValuePair>::const_iterator;
+    using iterator = typename std::list<KeyValuePair>::iterator;
 private:
     const static size_t CAPACITY = 5e5;
     size_t sz = 0;
     Hash hash;
-    std::list<std::pair<const KeyType, ValueType>> data;
+    std::list<KeyValuePair> data;
     std::vector<std::vector<iterator>> table = std::vector<std::vector<iterator>>(CAPACITY);
 public:
     HashMap(Hash hash = Hash()): hash(hash) {}
@@ -22,9 +23,8 @@ public:
     HashMap(It begin,
             const It end,
             Hash hash = Hash()): hash(hash) {
-        while (begin != end) {
-            insert(*begin);
-            ++begin;
+        for (auto it = begin; it != end; ++it) {
+            insert(*it);
         }
     }
 
@@ -75,14 +75,14 @@ public:
     void erase(const KeyType& key) {
         size_t bucket = hash(key) % CAPACITY;
 
-        for (size_t i = 0; i < table[bucket].size(); ++i) {
-            auto it = table[bucket][i];
+        for (size_t in_bucket_pos = 0; in_bucket_pos < table[bucket].size(); ++in_bucket_pos) {
+            auto it = table[bucket][in_bucket_pos];
 
             if (it->first == key) {
                 --sz;
 
                 data.erase(it);
-                table[bucket].erase(table[bucket].begin() + i);
+                table[bucket].erase(table[bucket].begin() + in_bucket_pos);
                 break;
             }
         }
